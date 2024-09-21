@@ -224,11 +224,14 @@ class _ReminderPageState extends State<ReminderPage> {
 
   void _showAddReminderDialog(
       BuildContext context, ReminderController reminderController) {
+    // Clear any previous error message when opening the dialog
+    reminderController.errorMessage.value = '';
+
     final titleController = TextEditingController();
     final descriptionController = TextEditingController();
     DateTime selectedDate = DateTime.now();
-    String category = 'Expense';
-    String repeatOption = 'None';
+    String category = 'Expense'; // default category
+    String repeatOption = 'None'; // default repeat option
 
     showDialog(
       context: context,
@@ -299,7 +302,19 @@ class _ReminderPageState extends State<ReminderPage> {
                         }
                       },
                     ),
-                    SizedBox(height: 10),
+
+                    // Display error message only if errorMessage is not empty
+                    Obx(() {
+                      if (reminderController.errorMessage.isNotEmpty) {
+                        return Text(
+                          reminderController.errorMessage.value,
+                          style: TextStyle(color: Colors.red),
+                        );
+                      }
+                      return SizedBox
+                          .shrink(); // Return an empty widget if no error
+                    }),
+
                     DropdownButton<String>(
                       value: category,
                       items: <String>['Income', 'Expense']
@@ -331,42 +346,57 @@ class _ReminderPageState extends State<ReminderPage> {
                         });
                       },
                     ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        OutlinedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Cancel'),
-                        ),
-                        SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: () async {
-                            final reminder = Reminder(
-                              id: DateTime.now().millisecondsSinceEpoch,
-                              title: titleController.text,
-                              descripition: descriptionController.text,
-                              dateTime: selectedDate,
-                              category: category,
-                              repeatOption: repeatOption,
-                            );
+                    SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () async {
+                        // Clear previous error message before validation
+                        reminderController.errorMessage.value = '';
 
-                            try {
-                              await reminderController.addReminder(reminder);
-                              Navigator.of(context).pop();
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text('Failed to add reminder')),
-                              );
-                            }
-                          },
-                          child: Text('Add'),
-                        ),
-                      ],
-                    ),
+                        // Validate title and description
+                        if (titleController.text.isEmpty ||
+                            descriptionController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(
+                                    'Title and description cannot be empty')),
+                          );
+                          return;
+                        }
+
+                        // Check if the selected date is in the past
+                        if (selectedDate.isBefore(DateTime.now())) {
+                          reminderController.errorMessage.value =
+                              'Reminder time is in the past. Please select a future time.';
+                          return;
+                        }
+
+                        // Create reminder object
+                        final reminder = Reminder(
+                          id: DateTime.now().millisecondsSinceEpoch,
+                          title: titleController.text,
+                          descripition: descriptionController.text,
+                          dateTime: selectedDate,
+                          category: category,
+                          repeatOption: repeatOption,
+                        );
+
+                        try {
+                          // Add reminder
+                          await reminderController.addReminder(reminder);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Reminder added successfully')),
+                          );
+                          Navigator.of(context).pop(); // Close the dialog
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Failed to add reminder: $e')),
+                          );
+                        }
+                      },
+                      child: Text('Add'),
+                    )
                   ],
                 ),
               ),
@@ -379,6 +409,9 @@ class _ReminderPageState extends State<ReminderPage> {
 
   void _showEditReminderDialog(BuildContext context,
       ReminderController reminderController, Reminder reminder) {
+    // Clear any previous error message when opening the dialog
+    reminderController.errorMessage.value = '';
+
     final titleController = TextEditingController(text: reminder.title);
     final descriptionController =
         TextEditingController(text: reminder.descripition);
@@ -487,12 +520,28 @@ class _ReminderPageState extends State<ReminderPage> {
                         });
                       },
                     ),
+                    SizedBox(height: 10),
+
+                    // Display error message only if errorMessage is not empty
+                    Obx(() {
+                      if (reminderController.errorMessage.isNotEmpty) {
+                        return Text(
+                          reminderController.errorMessage.value,
+                          style: TextStyle(color: Colors.red),
+                        );
+                      }
+                      return SizedBox
+                          .shrink(); // Return an empty widget if no error
+                    }),
+
                     SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         OutlinedButton(
                           onPressed: () {
+                            reminderController.errorMessage.value =
+                                ''; // Clear the error message on cancel
                             Navigator.of(context).pop();
                           },
                           child: Text('Cancel'),
@@ -500,6 +549,26 @@ class _ReminderPageState extends State<ReminderPage> {
                         SizedBox(width: 10),
                         ElevatedButton(
                           onPressed: () async {
+                            reminderController.errorMessage.value =
+                                ''; // Clear any previous error
+
+                            if (titleController.text.isEmpty ||
+                                descriptionController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text(
+                                        'Title and description cannot be empty')),
+                              );
+                              return;
+                            }
+
+                            // Check if the selected date is in the past
+                            if (selectedDate.isBefore(DateTime.now())) {
+                              reminderController.errorMessage.value =
+                                  'Reminder time is in the past. Please select a future time.';
+                              return;
+                            }
+
                             final updatedReminder = Reminder(
                               id: reminder.id,
                               title: titleController.text,

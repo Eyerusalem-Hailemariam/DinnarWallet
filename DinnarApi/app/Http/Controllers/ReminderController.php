@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Reminder;
+use Illuminate\Support\Facades\Auth;
 
 class ReminderController extends Controller
 {
@@ -10,60 +12,53 @@ class ReminderController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'descripition' => 'nullable|string',
+            'descripition' => 'nullable|string', // Corrected spelling
             'date_time' => 'required|date',
             'category' => 'required|string',
             'repeat_option' => 'nullable|string',
         ]);
 
-        $reminder = Reminder::create([
-            'title' => $request->title,
-            'descripition' => $request->descripition,
-            'date_time' => $request->date_time,
-            'category' => $request->category,
-            'repeat_option' => $request->repeat_option,
-        ]);
+        // Create a new reminder with the validated data
+        $reminder = Reminder::create(array_merge($request->all(), ['user_id' => Auth::id()]));
 
         return response()->json($reminder, 201);
     }
 
     public function index()
     {
-        return Reminder::all();
+        // Retrieve reminders for the authenticated user
+        $reminders = Reminder::where('user_id', Auth::id())->get();
+
+        return response()->json($reminders);
     }
 
-    // Laravel: ReminderController.php
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'descripition' => 'nullable|string', // Corrected spelling
+            'date_time' => 'required|date',
+            'category' => 'required|string',
+            'repeat_option' => 'nullable|string',
+        ]);
 
-public function update(Request $request, $id)
-{
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'descripition' => 'nullable|string',
-        'date_time' => 'required|date',
-        'category' => 'required|string',
-        'repeat_option' => 'nullable|string',
-    ]);
+        $reminder = Reminder::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
 
-    $reminder = Reminder::findOrFail($id);
+        $reminder->update($request->all());
 
-    $reminder->update([
-        'title' => $request->title,
-        'descripition' => $request->descripition,
-        'date_time' => $request->date_time,
-        'category' => $request->category,
-        'repeat_option' => $request->repeat_option,
-    ]);
+        return response()->json($reminder, 200);
+    }
 
-    return response()->json($reminder, 200);
+    public function destroy($id)
+    {
+        $reminder = Reminder::where('id', $id)->where('user_id', Auth::id())->first();
+
+        if ($reminder) {
+            $reminder->delete();
+            return response()->json(['message' => 'Reminder deleted successfully'], 204);
+        }
+
+        return response()->json(['message' => 'Reminder not found.'], 404);
+    }
 }
 
-public function destroy($id)
-{
-    $reminder = Reminder::findOrFail($id);
-    $reminder->delete(); // Delete the reminder from the database
-
-    return response()->json(['message' => 'Reminder deleted successfully'], 204); // 204 No Content
-}
-
-    
-}

@@ -82,9 +82,11 @@ class AuthenticationController extends GetxController {
       if (response.statusCode == 200) {
         final responseBody = json.decode(response.body);
         token.value = responseBody['token'];
-        final userId = responseBody['user_id']; // Extract user_id
+        final userId = responseBody['user_id']; 
+          final userEmail = responseBody['email'];// Extract user_id
         box.write('token', token.value);
-        box.write('user_id', userId); // Save user_id to GetStorage
+        box.write('user_id', userId); 
+         box.write('email', userEmail);// Save user_id to GetStorage
         return true;
       } else {
         final body = json.decode(response.body);

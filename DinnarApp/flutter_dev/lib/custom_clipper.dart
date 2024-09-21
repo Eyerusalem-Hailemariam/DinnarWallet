@@ -8,9 +8,9 @@ class CustomClipperWidget extends CustomClipper<Path> {
     // Start from the top-left corner
     path.lineTo(0, size.height * 0.7);
 
-    // Define control points for the Bézier curve
+   
     final controlPoint1 = Offset(
-        size.width * 0.08, size.height + 100); // Increase the y-coordinate
+        size.width * 0.08, size.height + 100);
     final controlPoint2 = Offset(size.width * 0.999,
         size.height * 0.9 + 80); // Increase the y-coordinate
     final endPoint = Offset(size.width, size.height * 0.75);

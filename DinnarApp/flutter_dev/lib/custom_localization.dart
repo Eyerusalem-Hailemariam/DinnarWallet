@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart'; 
+import 'package:flutter/foundation.dart';
 
 class CustomLocalizations {
   final Locale locale;
@@ -23,7 +23,8 @@ class CustomLocalizations {
   }
 }
 
-class CustomLocalizationsDelegate extends LocalizationsDelegate<CustomLocalizations> {
+class CustomLocalizationsDelegate
+    extends LocalizationsDelegate<CustomLocalizations> {
   const CustomLocalizationsDelegate();
 
   @override
@@ -48,7 +49,8 @@ class GetXLocalizations {
   // Add methods to fetch translations
 }
 
-class GetXLocalizationsDelegate extends LocalizationsDelegate<GetXLocalizations> {
+class GetXLocalizationsDelegate
+    extends LocalizationsDelegate<GetXLocalizations> {
   const GetXLocalizationsDelegate();
 
   @override
@@ -63,6 +65,3 @@ class GetXLocalizationsDelegate extends LocalizationsDelegate<GetXLocalizations>
   @override
   bool shouldReload(GetXLocalizationsDelegate old) => false;
 }
-
-
-

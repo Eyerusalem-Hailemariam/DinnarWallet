@@ -10,6 +10,9 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TranslationController;
 use App\Http\Controllers\ReminderController;
+use App\Http\Controllers\NotificationController;
+
+
 
 
 Route::get('/test', function () {
@@ -70,6 +73,17 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/transactions/currency', [UserController::class, 'getTransactionCurrency']);
 });
 
+Route::post('send-notification', [NotificationController::class, 'send'])->middleware('auth:api');
+Route::put('/reminders/{id}', [NotificationController::class, 'updateReminder']);
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('reminders', [ReminderController::class, 'index']);
+    Route::post('reminders', [ReminderController::class, 'store']);
+    Route::put('/reminders/{id}', [ReminderController::class, 'update']);
+    
+    Route::apiResource('reminders', ReminderController::class);
+    
+});
 
 
 
