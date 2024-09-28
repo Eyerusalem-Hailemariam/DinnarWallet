@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
-import 'package:flutter_dev/onboarding_page.dart';
+import 'package:flutter_dev/screen/onboarding/onboarding_page.dart';
 import 'package:flutter_dev/constant/constant.dart';
+import '../screen/auth/verify_email_screen.dart';
 
 class AuthenticationController extends GetxController {
   final isLoading = false.obs;
@@ -72,22 +73,37 @@ class AuthenticationController extends GetxController {
       final response = await http.post(
         Uri.parse(url + 'login'),
         headers: {
-          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
         body: data,
       );
 
       isLoading.value = false;
+
       if (response.statusCode == 200) {
         final responseBody = json.decode(response.body);
         token.value = responseBody['token'];
-        final userId = responseBody['user_id']; 
-          final userEmail = responseBody['email'];// Extract user_id
+        final userId = responseBody['user_id'];
+        final userEmail = responseBody['email'];
+        final isEmailVerified = responseBody['is_email_verified'];
+
         box.write('token', token.value);
-        box.write('user_id', userId); 
-         box.write('email', userEmail);// Save user_id to GetStorage
+        box.write('user_id', userId);
+        box.write('email', userEmail);
+
+        // Check if the email is verified
+        if (isEmailVerified == false) {
+          // Navigate to the Verify Email Screen if the email is not verified
+          Get.to(() => VerifyEmailScreen());
+          return false; // Indicate that login was not fully successful due to unverified email
+        }
+
         return true;
+      } else if (response.statusCode == 403) {
+        Get.to(() =>
+            VerifyEmailScreen()); // If specific response indicates unverified email
+        return false;
       } else {
         final body = json.decode(response.body);
         errorMessage.value =
@@ -281,57 +297,6 @@ class AuthenticationController extends GetxController {
       print('Error: $e');
       errorMessage.value = 'An unexpected error occurred.';
       return false;
-    }
-  }
-
-  Future<void> addNewCategoryAndTransaction({
-    required BuildContext context,
-    required String categoryName,
-    required String categoryIcon,
-    required String categoryColor,
-    required double transactionAmount,
-    required String selectedDate,
-    required String transactionType,
-    // Add this parameter
-  }) async {
-    try {
-      // Step 1: Add the category first
-      final categoryId = await addCategory(
-        categoryName: categoryName,
-        categoryIcon: categoryIcon,
-        categoryColor: categoryColor,
-      );
-
-      // Step 2: Check if the category was successfully added
-      if (categoryId != null) {
-        // Step 3: Add the transaction with the returned category ID
-        final success = await addTransaction(
-          selectedCategoryId: categoryId,
-          transactionAmount: transactionAmount,
-          selectedDate: selectedDate,
-          transactionType: transactionType, // Pass the type here
-        );
-
-        // Step 4: Handle success or failure
-        if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Transaction added successfully.')),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to add transaction.')),
-          );
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to add category.')),
-        );
-      }
-    } catch (e) {
-      print('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An unexpected error occurred.')),
-      );
     }
   }
 

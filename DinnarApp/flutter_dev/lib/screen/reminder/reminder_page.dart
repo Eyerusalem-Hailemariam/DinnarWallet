@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'model/reminder.dart';
-import 'constant/constant.dart';
-import 'controller/reminder.dart';
+import '../../model/reminder.dart';
+import '../../constant/constant.dart';
+import '../../controller/reminder.dart';
 
 class ReminderPage extends StatefulWidget {
   @override
@@ -77,7 +77,7 @@ class _ReminderPageState extends State<ReminderPage> {
                 });
               },
               decoration: InputDecoration(
-                hintText: 'Search reminders...',
+                hintText: 'Search reminders'.tr,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -105,8 +105,7 @@ class _ReminderPageState extends State<ReminderPage> {
           );
         }
 
-        final remindersToShow = filteredReminders; // Get the filtered reminders
-
+        final remindersToShow = filteredReminders; 
         return ListView.builder(
           itemCount: remindersToShow.length,
           itemBuilder: (context, index) {

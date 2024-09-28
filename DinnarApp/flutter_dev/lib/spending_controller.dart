@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dev/notification_page.dart';
-import 'package:flutter_dev/home_screen.dart';
-import 'package:flutter_dev/reminder_page.dart';
-import 'package:flutter_dev/statistics.dart';
-import 'package:flutter_dev/transactionController.dart';
-import 'package:flutter_dev/transaction_screen.dart';
+import 'package:flutter_dev/screen/notification/notification_page.dart';
+import 'package:flutter_dev/screen/home/home_screen.dart';
+import 'package:flutter_dev/screen/reminder/reminder_page.dart';
+import 'package:flutter_dev/screen/statistics/statistics.dart';
+import 'package:flutter_dev/controller/transactionController.dart';
+import 'package:flutter_dev/screen/transaction/transaction_screen.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
-import 'showadd.dart';
-import 'transaction_dialog.dart';
-import 'sider_bar.dart';
-import 'custom_theme.dart';
+import 'componentt/category_dialog.dart';
+import 'componentt/transaction_dialog.dart';
+import 'componentt/sider_bar.dart';
+import 'componentt/custom_theme.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:flutter/cupertino.dart';
@@ -199,14 +199,8 @@ class _SpendingControllerState extends State<SpendingController> {
                       ),
                       IconButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NotificationPage(
-                                onTransactionUpdate: _updateTransaction,
-                              ),
-                            ),
-                          );
+                          Get.to(() =>
+                              NotificationPage()); // Navigate to NotificationPage
                         },
                         icon: const FaIcon(FontAwesomeIcons.bell),
                         iconSize: screenHeight * 0.03,

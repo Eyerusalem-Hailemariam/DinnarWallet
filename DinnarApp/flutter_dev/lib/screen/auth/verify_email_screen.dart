@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dev/controller/authentication.dart';
 import 'package:get/get.dart';
-import 'spending_controller.dart';
+import '../../spending_controller.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   const VerifyEmailScreen({super.key});

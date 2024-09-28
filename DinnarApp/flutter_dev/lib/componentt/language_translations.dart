@@ -73,7 +73,8 @@ class LanguageTranslations extends Translations {
           'Weekly': 'Weekly',
           'Yearly': 'Yearly',
           'Edit Profile': 'Edit Profile',
-          "ChangePassword": "ChangePassword"
+          "ChangePassword": "ChangePassword",
+          "Search reminders": "Search reminders",
         },
 
         'am': {
@@ -107,7 +108,7 @@ class LanguageTranslations extends Translations {
           'Already have account': 'አካውንት አለዎት?',
           'Dont have account ?': 'አካውንት የለዎትም?',
           "enter_phone_number": "እባክዎን ስልክ ቁጥርዎን ያስገቡ",
-          "name_is_required": "{} ስም ያስፈልጋል",
+          "name_is_required": "ስም ያስፈልጋል",
           "Please enter a valid": "የሚሰራ አስገባ ",
           "email_is_required": "ኢሜል ያስፈልጋል",
           "invalid_email": "የማይሰራ ኢሜይል",
@@ -154,7 +155,8 @@ class LanguageTranslations extends Translations {
           'Weekly': 'ሳምንትዊ',
           'Monthly': "ወርሃዊ",
           'Edit Profile': "ፕሮፋይል አስተካክል",
-          "ChangePassword": "የይለፍ ቃል አስተካክል"
+          "ChangePassword": "የይለፍ ቃል አስተካክል",
+          "Search reminders": "አስታዋሽ ፈልግ",
         },
         // Add other languages as needed
       };

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_dev/controller/authentication.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:flutter_dev/forgot_password_screen.dart';
-import 'package:flutter_dev/signupp.dart';
+import 'package:flutter_dev/screen/auth/forgot_password_screen.dart';
+import 'package:flutter_dev/screen/signup/signupp.dart';
 import 'package:flutter_dev/spending_controller.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'controller/language.dart';
-import 'model/language.dart';
+import '../../controller/language.dart';
+import '../../model/language.dart';
 
 class LoginP extends StatefulWidget {
   const LoginP({super.key});

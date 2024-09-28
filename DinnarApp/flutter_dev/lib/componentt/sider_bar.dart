@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dev/EditProfile.dart';
-import 'package:flutter_dev/change_password.dart';
+import 'package:flutter_dev/screen/profile/EditProfile.dart';
+import 'package:flutter_dev/screen/auth/change_password.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'controller/currency.dart';
-import 'controller/authentication.dart';
-import 'model/currency.dart';
-import 'controller/user.dart';
+import '../controller/currency.dart';
+import '../controller/authentication.dart';
+import '../model/currency.dart';
+import '../controller/user.dart';
 
 class Sidebar extends StatelessWidget {
   final int selectedTab;
@@ -153,11 +153,7 @@ class Sidebar extends StatelessWidget {
                       if (newValue != null) {
                         final selected = Currency.currencies.firstWhere(
                             (currency) => currency.code == newValue);
-
-                        // Update user currency and transactions
                         currencyController.changeCurrency(selected);
-
-                        // Notify about the currency change
                         onCurrencyChanged(newValue);
                       }
                     },

@@ -1,33 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'controller/language.dart'; // Ensure these are correctly defined and imported
-import 'transactionController.dart'; // Ensure these are correctly defined and imported
-import 'language_translations.dart'; // Ensure these are correctly defined and imported
-import 'welcome_screen.dart'; // Ensure these are correctly defined and imported
-import 'onboarding_page.dart';
-import 'custom_localization.dart';
+import 'controller/language.dart';
+import 'controller/transactionController.dart'; 
+import 'componentt/language_translations.dart'; 
+import 'welcome_screen.dart';
+import 'screen/onboarding/onboarding_page.dart';
+import 'componentt/custom_localization.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_storage/get_storage.dart';
 import 'controller/currency.dart';
 import 'controller/reminder.dart';
-// Ensure these are correctly defined and imported
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize GetStorage
+  
   await GetStorage.init();
 
-  // Create instances of controllers
+  
   final languageController = Get.put(LanguageController());
   final transactionController = Get.put(TransactionController());
   Get.put(CurrencyController());
 
-  // Retrieve token from GetStorage
+  
   final box = GetStorage();
   String token = box.read('token') ?? '';
 
-  // Fetch the user's language preference
+  
   await languageController.fetchUserLanguage(token);
 
   runApp(MyApp());
@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
     final box = GetStorage();
     final String? storedLanguageCode = box.read('languageCode');
 
-    // Set initial locale based on stored language
+ 
     final Locale initialLocale = storedLanguageCode != null
         ? Locale(storedLanguageCode)
         : Get.deviceLocale ?? Locale('en');

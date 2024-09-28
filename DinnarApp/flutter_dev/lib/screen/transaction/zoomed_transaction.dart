@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'controller/currency.dart';
-import 'model/currency.dart';
+import '../../controller/currency.dart';
+import '../../model/currency.dart';
 
 class ZoomedTransactionPage extends StatefulWidget {
   final List<dynamic> transactions;
 
-  const ZoomedTransactionPage({required this.transactions});
+  const ZoomedTransactionPage({
+    required this.transactions
+    });
 
   @override
   State<ZoomedTransactionPage> createState() => _ZoomedTransactionPageState();
@@ -222,8 +224,8 @@ class _ZoomedTransactionPageState extends State<ZoomedTransactionPage> {
                       backgroundColor: categoryColor,
                       child: Image.asset(
                         'assets/images/$categoryIcon.png',
-                        width: 30, // Adjust to desired width
-                        height: 30, // Adjust to desired height
+                        width: 30,
+                        height: 30, 
                       ),
                     ),
                     title: Text(categoryName),

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_storage/get_storage.dart';
-import 'controller/language.dart';
-import 'model/language.dart';
-import 'custom_clipper.dart';
-import 'signupp.dart';
-import 'login_screen.dart';
+import '../../controller/language.dart';
+import '../../model/language.dart';
+import '../../componentt/custom_clipper.dart';
+import '../signup/signupp.dart';
+import '../login/login_screen.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -20,18 +20,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
   final PageController controller = PageController();
   Language? selectedLanguage;
   final languageController = Get.find<LanguageController>();
-  final box = GetStorage(); // For accessing stored token and language
+  final box = GetStorage(); 
 
   @override
   void initState() {
     super.initState();
-    // Initialize the selected language from local storage
+   
     String? storedLanguageCode = box.read('languageCode');
     if (storedLanguageCode != null) {
       selectedLanguage = Language.languages
           .firstWhere((language) => language.code == storedLanguageCode);
     } else {
-      // If no language is stored, use a default language or let user choose again
       selectedLanguage = Language.languages.first;
     }
   }

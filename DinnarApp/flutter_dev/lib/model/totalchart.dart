@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'controller/currency.dart';
+import '../controller/currency.dart';
 import 'package:get/get.dart';
-import 'model/currency.dart';
+import 'currency.dart';
 import 'package:get_storage/get_storage.dart';
 
 class Totalchart extends StatefulWidget {

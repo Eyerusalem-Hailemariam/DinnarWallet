@@ -3,7 +3,7 @@ import 'package:flutter_dev/controller/authentication.dart';
 import 'package:intl/intl.dart'; // For date formatting
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'constant/constant.dart';
+import '../constant/constant.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -11,13 +11,16 @@ List<Map<String, dynamic>>? _cachedCategories;
 
 Future<List<Map<String, dynamic>>> fetchCategories(
     {bool excludeLinked = false}) async {
-  // Check if we have cached categories and if they are valid
+  final box = GetStorage();
+  final token = box.read('token');
+
+  if (token == null) {
+    throw Exception('Token not found.');
+  }
+
   if (_cachedCategories != null && !excludeLinked) {
     return _cachedCategories!;
   }
-
-  final box = GetStorage();
-  final token = box.read('token');
 
   final response = await http.get(
     Uri.parse(url + 'categories'), // Fetch all categories
@@ -38,6 +41,7 @@ Future<List<Map<String, dynamic>>> fetchCategories(
       if (!seenCategoryNames.contains(name)) {
         seenCategoryNames.add(name);
         categories.add({
+          'id': category['id'], // Ensure ID is captured
           'name': name,
           'icon': category['icon'] ?? '',
           'color': Color(int.parse(
@@ -101,6 +105,7 @@ void showAddTransactionDialog(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Income and Expense Tabs
+                        // ... (Other UI elements)
                         Container(
                           decoration: BoxDecoration(
                             color: isDarkMode
@@ -443,7 +448,7 @@ void showAddTransactionDialog(
                             final selectedCategoryData = categories.firstWhere(
                               (category) =>
                                   category['name'] == selectedCategory,
-                              orElse: () => null!,
+                              orElse: () => {},
                             );
 
                             if (selectedCategoryData == null) {
@@ -463,35 +468,43 @@ void showAddTransactionDialog(
                                 dateFormatInput.parse(dateController.text);
                             final formattedDate = dateFormatOutput.format(date);
 
-                            // Call the function to add the new category and transaction
-                            await authController.addNewCategoryAndTransaction(
-                              context: context,
-                              categoryName: selectedCategoryData['name'],
-                              categoryIcon: selectedCategoryData['icon'],
-                              categoryColor:
-                                  colorToHex(selectedCategoryData['color']),
+                            // Call the function to add the transaction
+                            final success = await authController.addTransaction(
+                              selectedCategoryId: selectedCategoryData['id'],
                               transactionAmount: transactionAmount,
                               selectedDate: formattedDate,
                               transactionType:
                                   selectedTab == 0 ? 'Income' : 'Expense',
                             );
 
-                            // Prepare transaction data to pass to the addTransaction function
-                            final transactionData = {
+                            if (success) {
+                              // Prepare transaction data to pass to the addTransaction function
+                              
+                              // Add the transaction to the list
+                              final newTransaction = {
+                              'category_id': selectedCategoryData['id'],
                               'category_name': selectedCategoryData['name'],
                               'category_icon': selectedCategoryData['icon'],
                               'category_color':
                                   colorToHex(selectedCategoryData['color']),
-                              'amount': transactionAmount,
                               'transaction_date': formattedDate,
+                              'amount': transactionAmount,
                               'type': selectedTab == 0 ? 'Income' : 'Expense',
                             };
 
-                            // Add the transaction to the list
-                            addTransaction(transactionData);
-                            print(transactionData);
-                            // Close the dialog after the transaction is added
-                            Navigator.of(context).pop();
+                            // Add the transaction to the UI
+                            addTransaction(newTransaction);
+
+                              // Close the dialog after the transaction is added
+                              Navigator.of(context).pop();
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Failed to add transaction.'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
                           } catch (e) {
                             print('Error adding transaction: $e');
                             ScaffoldMessenger.of(context).showSnackBar(

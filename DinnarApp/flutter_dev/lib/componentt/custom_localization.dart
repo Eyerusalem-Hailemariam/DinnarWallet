@@ -11,14 +11,13 @@ class CustomLocalizations {
   }
 
   String get someLocalizedText {
-    // Define translations for different locales
+   
     Map<String, String> localizedStrings = {
       'en': 'Hello',
-      'am': 'ሰላም', // Amharic translation for 'Hello'
-      // Add more translations for other locales
+      'am': 'ሰላም', 
     };
 
-    // Return the localized string based on the locale
+   
     return localizedStrings[locale.languageCode] ?? 'Default text';
   }
 }
@@ -32,7 +31,7 @@ class CustomLocalizationsDelegate
 
   @override
   Future<CustomLocalizations> load(Locale locale) {
-    // Initialize CustomLocalizations with the provided locale
+    
     return SynchronousFuture<CustomLocalizations>(CustomLocalizations(locale));
   }
 
@@ -42,11 +41,10 @@ class CustomLocalizationsDelegate
 
 class GetXLocalizations {
   static Future<void> load(Locale locale) async {
-    // Load localization data here
-    // This is where you can load your translations, for example from assets or an API
+    
   }
 
-  // Add methods to fetch translations
+ 
 }
 
 class GetXLocalizationsDelegate

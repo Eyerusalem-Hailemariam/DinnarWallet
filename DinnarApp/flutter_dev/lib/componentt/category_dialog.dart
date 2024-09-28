@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter/cupertino.dart';
-import 'controller/authentication.dart'; // Import the controller
+import '../../controller/authentication.dart'; // Import the controller
 import 'package:get/get.dart'; // Import GetX
 
 class AddCategoryDialog extends StatefulWidget {

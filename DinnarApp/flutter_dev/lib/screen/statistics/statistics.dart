@@ -5,10 +5,10 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'category_card.dart';
-import 'constant/constant.dart';
+import '../../model/category_card.dart';
+import '../../constant/constant.dart';
 import 'package:intl/intl.dart';
-import 'totalchart.dart';
+import '../../model/totalchart.dart';
 
 class Statistics extends StatefulWidget {
   const Statistics({super.key});
@@ -139,8 +139,8 @@ class _StatisticsState extends State<Statistics> {
     return filteredTransactions.map((transaction) {
       final amount = transaction['amount'];
       final color = transaction['category_color'] is String
-          ? Color(
-              int.parse(transaction['category_color'].replaceAll('#', '0xFF')))
+          ? Color(int.parse(transaction['category_color'].replaceAll('#', ''),
+              radix: 16))
           : transaction['category_color'] as Color;
 
       return PieChartSectionData(
@@ -259,7 +259,8 @@ class _StatisticsState extends State<Statistics> {
                                   color: colorToHex(Color(int.parse(
                                       filteredTransactions[firstIndex]
                                               ['category_color']
-                                          .replaceAll('#', '0xFF')))),
+                                          .replaceAll('#', ''),
+                                      radix: 16))),
                                   categoryIcon: filteredTransactions[firstIndex]
                                       ['category_icon'],
                                   currencySymbol:
@@ -275,7 +276,8 @@ class _StatisticsState extends State<Statistics> {
                                     color: colorToHex(Color(int.parse(
                                         filteredTransactions[secondIndex]
                                                 ['category_color']
-                                            .replaceAll('#', '0xFF')))),
+                                            .replaceAll('#', ''),
+                                        radix: 16))),
                                     categoryIcon:
                                         filteredTransactions[secondIndex]
                                             ['category_icon'],

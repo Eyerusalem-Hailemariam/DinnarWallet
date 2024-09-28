@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:get_storage/get_storage.dart';
-import 'constant/constant.dart';
+import '../../constant/constant.dart';
 
 class ChangePassword extends StatefulWidget {
   const ChangePassword({super.key});

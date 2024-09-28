@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'transactionController.dart';
-import 'controller/authentication.dart';
+import '../../controller/transactionController.dart';
+import '../../controller/authentication.dart';
 import 'package:http/http.dart' as http;
-import 'constant/constant.dart';
+import '../../constant/constant.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
-import 'model/currency.dart';
-import 'controller/currency.dart';
+import '../../model/currency.dart';
+import '../../controller/currency.dart';
 import 'package:get_storage/get_storage.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -53,7 +53,7 @@ class HomeScreenState extends State<HomeScreen> {
       final response = await http.get(
         Uri.parse(url + 'transactions'),
         headers: {
-          'Authorization': 'Bearer $token', // Replace with your token
+          'Authorization': 'Bearer $token',
           'Accept': 'application/json',
         },
       );
@@ -78,9 +78,7 @@ class HomeScreenState extends State<HomeScreen> {
           final amount =
               double.tryParse(transactionMap['amount'].toString()) ?? 0.0;
           final type = transactionMap['type'];
-          final categoryId = transactionMap['category_id']; // Fetch category_id
-
-          // Convert the amount based on the selected currency's exchange rate
+          final transactionId = transactionMap['id']; // Fetch transaction ID
 
           if (type == 'Income') {
             totalIncome += amount;
@@ -93,10 +91,8 @@ class HomeScreenState extends State<HomeScreen> {
             'category_name': category['name'],
             'category_icon': category['icon'],
             'category_color': category['color'],
-            'category_id':
-                categoryId, // Add category_id to the transaction data
-            'limit': limit, // Add limit to the transaction data
-            // Store the converted amount
+            'transaction_id': transactionId, // Add transaction ID to the data
+            'limit': limit,
           };
         }).toList();
 
@@ -117,33 +113,31 @@ class HomeScreenState extends State<HomeScreen> {
 
     // Fetch the first expense transaction that matches the category
     final currentExpenseTransaction = controller.transactions.firstWhere(
-      (t) => t['category_name'] == category && t['type'] == 'Expense',
-      orElse: () => {'limit': 0.0},
-    );
+        (t) => t['category_name'] == category && t['type'] == 'Expense',
+        orElse: () =>
+            {} // Return an empty map if no matching transaction is found
+        );
 
-    // Get the current limit, or default to 0.0
-    final currentLimit =
-        currentExpenseTransaction['limit']?.toString() ?? '0.0';
+    final currentLimit = currentExpenseTransaction.isNotEmpty
+        ? currentExpenseTransaction['limit']?.toString() ?? '0.0'
+        : '0.0';
 
     limitController.text = currentLimit;
 
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // Allows the sheet to be scrollable
+      isScrollControlled: true,
       builder: (context) {
-        // Calculate the keyboard height and adjust padding accordingly
         final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
 
         return Container(
-          height: MediaQuery.of(context).size.height *
-              0.43, // Adjust height as needed
+          height: MediaQuery.of(context).size.height * 0.43,
           child: Padding(
             padding: EdgeInsets.only(
               left: 16.0,
               right: 16.0,
               top: 20.0,
-              bottom: keyboardHeight +
-                  16.0, // Add extra space to the bottom to ensure content is not hidden
+              bottom: keyboardHeight + 16.0,
             ),
             child: SingleChildScrollView(
               child: Column(
@@ -151,7 +145,7 @@ class HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    "Set Limit $category",
+                    "Set Limit for $category",
                     style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
@@ -160,11 +154,12 @@ class HomeScreenState extends State<HomeScreen> {
                     controller: limitController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      labelText: 'Limit'.tr,
+                      labelText: 'Limit',
                       labelStyle:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black)),
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
                     ),
                   ),
                   SizedBox(height: 24),
@@ -176,52 +171,46 @@ class HomeScreenState extends State<HomeScreen> {
                           final newLimit =
                               double.tryParse(limitController.text) ?? 0.0;
 
-                          // Ensure the transaction is of type 'Expense'
-                          if (currentExpenseTransaction['type'] == 'Expense') {
-                            final categoryId =
-                                currentExpenseTransaction['category_id'];
+                          // Check if the current transaction is valid and is of type 'Expense'
+                          if (currentExpenseTransaction.isNotEmpty &&
+                              currentExpenseTransaction['type'] == 'Expense') {
+                            final transactionId = currentExpenseTransaction[
+                                'transaction_id']; // Use transaction ID
 
-                            if (categoryId != null &&
-                                categoryId.toString().isNotEmpty) {
-                              final success = await updateCategoryLimit(
-                                  categoryId.toString(), newLimit);
+                            print(
+                                "Attempting to update limit for transaction ID: $transactionId with limit: $newLimit");
 
+                            if (transactionId != null &&
+                                transactionId.toString().isNotEmpty) {
+                              final success = await updateTransactionLimit(
+                                  transactionId.toString(), newLimit);
+
+                              // Handle success and failure
                               if (success) {
-                                setState(() {
-                                  // Update the limit in the UI
-                                  final index =
-                                      controller.transactions.indexWhere(
-                                    (t) =>
-                                        t['category_name'] == category &&
-                                        t['type'] == 'Expense',
-                                  );
-                                  if (index != -1) {
-                                    controller.transactions[index]['limit'] =
-                                        newLimit;
-                                  }
-                                });
+                                // Refresh the transactions after a successful update
+                                await fetchTransactions();
+                                // Optionally show a success message
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text(
+                                            'Limit updated successfully!')));
                               } else {
-                                print('Failed to update limit in database');
+                                // Show an error message
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                    content: Text(
+                                        'Failed to update limit. Please try again.')));
                               }
                             } else {
-                              print('Invalid categoryId');
+                              print('Invalid transactionId');
                             }
                           } else {
                             print(
-                                'Cannot set limit for non-expense transaction');
+                                'Cannot set limit for non-expense transaction or no transaction found');
                           }
 
                           Navigator.of(context).pop();
                         },
-                        child: Text(
-                          'Set',
-                          style: const TextStyle(
-                              color: Colors.black, fontWeight: FontWeight.bold),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 68, 255, 199),
-                        ),
+                        child: Text('Set'),
                       ),
                     ],
                   ),
@@ -234,7 +223,7 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<bool> updateCategoryLimit(String categoryId, double newLimit) async {
+  Future<bool> updateCategoryLimit(String categoryId, double limit) async {
     try {
       final box = GetStorage();
       final token = box.read('token');
@@ -242,23 +231,55 @@ class HomeScreenState extends State<HomeScreen> {
         Uri.parse(url + 'transactions/$categoryId'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token', // If authentication is required
+          'Authorization': 'Bearer $token',
         },
         body: jsonEncode({
-          'limit': newLimit,
+          'limit': limit,
+          'type': 'Expense', // Ensure type is explicitly set
         }),
       );
-
+      print("Response status: ${response.statusCode}");
+      print("Response body: ${response.body}");
       if (response.statusCode == 200) {
-        print('Limit updated successfully');
-        return true; // Indicate success
+        return true;
       } else {
-        print('Failed to update limit: ${response.body}');
-        return false; // Indicate failure
+        print("Failed to update limit: ${response.body}");
+        return false;
       }
-    } catch (e) {
-      print('Error: $e');
-      return false; // Indicate failure
+    } catch (error) {
+      print("Error occurred while updating limit: $error");
+      return false;
+    }
+  }
+
+  Future<bool> updateTransactionLimit(
+      String transactionId, double limit) async {
+    try {
+      final box = GetStorage();
+      final token = box.read('token');
+      final response = await http.put(
+        Uri.parse(url +
+            'transactions/$transactionId'), // Use transaction ID in the URL
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'limit': limit,
+          'type': 'Expense', // Ensure type is explicitly set
+        }),
+      );
+      print("Response status: ${response.statusCode}");
+      print("Response body: ${response.body}");
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print("Failed to update limit: ${response.body}");
+        return false;
+      }
+    } catch (error) {
+      print("Error occurred while updating limit: $error");
+      return false;
     }
   }
 

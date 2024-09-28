@@ -2,13 +2,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dev/controller/authentication.dart';
 
-import 'package:flutter_dev/verify_email_screen.dart';
+import 'package:flutter_dev/screen/auth/verify_email_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'login_screen.dart';
+import '../login/login_screen.dart';
 import 'package:get_storage/get_storage.dart';
-import 'controller/language.dart';
-import 'model/language.dart';
+import '../../controller/language.dart';
+import '../../model/language.dart';
 
 class SignUpp extends StatefulWidget {
   const SignUpp({super.key});

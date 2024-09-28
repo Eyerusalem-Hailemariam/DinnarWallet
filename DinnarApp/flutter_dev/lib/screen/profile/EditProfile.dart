@@ -24,24 +24,23 @@ class _EditprofileState extends State<Editprofile> {
   @override
   void initState() {
     super.initState();
-    // Initialize fields with the user's current data
     initialEmail = userController.user.value.email;
     name = userController.user.value.name;
     phone = userController.user.value.phone;
   }
 
-  // Function to update user profile
+  
   void _updateUser() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      // Perform user update without password change
+    
       var response = await userController.updateUser(name, initialEmail, phone);
 
       if (response != null && response.statusCode == 200) {
         Get.snackbar('Success', 'Profile updated successfully');
       } else {
-        // Error messages are handled in the controller
+      
         Get.snackbar('Error', 'Failed to update profile');
       }
     }
