@@ -18,7 +18,7 @@ class CurrencyConversionService
     // Method to convert currency using the external API
     public function convert($fromCurrency, $toCurrency, $amount)
     {
-        $apiKey = env('CURRENCY_API_KEY'); // Your API key
+        $apiKey = env('CURRENCY_API_KEY'); 
         $url = "https://v6.exchangerate-api.com/v6/{$apiKey}/latest/{$fromCurrency}";
 
         try {

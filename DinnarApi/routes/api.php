@@ -42,7 +42,7 @@ Route::get('/categories', [CategoryController::class, 'index']);
 Route::middleware('auth:api')->group(function () {
 Route::post('/transactions', [TransactionController::class, 'store']);
 Route::get('/transactions', [TransactionController::class, 'index']);
-Route::put('/transactions/{categoryId}', [TransactionController::class, 'updateLimitByCategory']);
+Route::put('/transactions/{transactionId}', [TransactionController::class, 'updateLimitByTransaction']);
 Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
 });
 

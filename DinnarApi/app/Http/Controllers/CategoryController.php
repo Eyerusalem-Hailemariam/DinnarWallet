@@ -22,10 +22,10 @@ class CategoryController extends Controller
 
         \Log::debug('Validated data:', $validated); // Log validated data
 
-        // Create a new category for the authenticated user
+       
         $category = Category::create(array_merge($validated, ['user_id' => Auth::id()]));
 
-        // Return a JSON response with the created category and a 201 status code
+     
         return response()->json([
             'id' => $category->id, 
             'user_id' => $category->user_id,
@@ -35,8 +35,7 @@ class CategoryController extends Controller
         ], 201);
     }
 
-    // Retrieve all categories for the authenticated user
-   // Retrieve all categories for the authenticated user
+    
 public function index()
 {
     // Get all categories that belong to the authenticated user

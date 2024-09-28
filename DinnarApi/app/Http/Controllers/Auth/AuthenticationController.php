@@ -64,49 +64,47 @@ class AuthenticationController extends Controller
 
     public function login(Request $request)
     {
-
-    $validator = Validator::make($request->all(), [
-        'email' => 'required|email',
-        'password' => 'required|string|min:6',
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json([
-            'message' => 'Validation failed',
-            'errors' => $validator->errors()
-        ], 422);
-    }
-
-    $user = User::where('email', $request->email)->first();
-
-    if (!$user) {
-        return response()->json(['message' => 'Email not found'], 404);
-    }
-    if ($user->email_verified_at===null) {
-       $verificationCode = random_int(100000, 999999);
- 
-      
-        $user->update(['verification_code' => $verificationCode, // Store the verification code
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|string|min:6',
         ]);
     
-        // Send the verification code via email
-        Mail::to($user->email)->send(new VerifyEmail($user, $verificationCode));
-        return response()->json(['message' => 'unverified'], 404);
-       
-
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+    
+        $user = User::where('email', $request->email)->first();
+    
+        if (!$user) {
+            return response()->json(['message' => 'Email not found'], 404);
+        }
+    
+        // Check if email is verified
+        if (!$user->email_verified_at) {
+            $verificationCode = random_int(100000, 999999);
+            $user->update(['verification_code' => $verificationCode]);
+    
+            Mail::to($user->email)->send(new VerifyEmail($user, $verificationCode));
+            return response()->json(['message' => 'Please verify your email. A new verification code has been sent.'], 403);
+        }
+    
+        if (!Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Incorrect password'], 401);
+        }
+    
+        // Generate token
+        $token = $user->createToken('walletapp')->plainTextToken;
+    
+        return response()->json([
+            'user_id' => $user->id,
+            'token' => $token,
+            'email' => $user->email
+        ], 200);
     }
-    if (!Hash::check($request->password, $user->password)) {
-        return response()->json(['message' => 'Incorrect password'], 401);
-    }
-
-    $token = $user->createToken('walletapp')->plainTextToken;
-
-    return response()->json([
-        'user_id' => $user->id, 
-        'token' => $token
-    ], 200);
-    }
-
+    
     // API Endpoint to Verify the Code
     public function verifyEmail(Request $request)
 {

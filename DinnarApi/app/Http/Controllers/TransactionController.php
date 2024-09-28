@@ -67,32 +67,35 @@ class TransactionController extends Controller
         }));
     }
 
-    public function updateLimitByCategory(Request $request, $categoryId)
+    public function updateLimitByTransaction(Request $request, $transactionId)
     {
         // Validate the incoming request data
         $validated = $request->validate([
             'limit' => 'required|numeric|min:0',
         ]);
-
-        // Find the transaction for the current user
-        $transaction = Transaction::where('category_id', $categoryId)
+    
+        // Find the transaction by its ID
+        $transaction = Transaction::where('id', $transactionId)
             ->where('user_id', Auth::id())
             ->first();
-
+    
         if (!$transaction) {
             return response()->json(['message' => 'Transaction not found'], 404);
         }
-
+    
+        \Log::info('Transaction type for ID ' . $transactionId . ': ' . $transaction->type);
+    
         // Check if the transaction type is 'Expense'
         if ($transaction->type !== 'Expense') {
             return response()->json(['message' => 'Limit can only be set for Expense type transactions'], 400);
         }
-
+    
         // Update the limit
         $transaction->update(['limit' => $validated['limit']]);
-
+    
         return response()->json(['message' => 'Limit updated successfully']);
     }
+    
 
     public function destroy($id)
     {
