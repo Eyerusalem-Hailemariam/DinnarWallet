@@ -120,6 +120,7 @@ class TransactionController extends GetxController {
 
     // Refresh the transactions list to ensure reactivity
     transactions.refresh();
+    
 
     // Optionally, fetch transactions again to sync with the server
     fetchTransactions();

@@ -73,6 +73,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/transactions/currency', [UserController::class, 'getTransactionCurrency']);
 });
 
+Route::get('/notifications', [NotificationController::class, 'index']);
+Route::post('/notifications', [NotificationController::class, 'store']);
 Route::post('send-notification', [NotificationController::class, 'send'])->middleware('auth:api');
 Route::put('/reminders/{id}', [NotificationController::class, 'updateReminder']);
 

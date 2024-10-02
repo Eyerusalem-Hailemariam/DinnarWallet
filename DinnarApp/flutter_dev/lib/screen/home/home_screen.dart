@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_dev/controller/notification.dart';
 import 'package:get/get.dart';
 import '../../controller/transactionController.dart';
 import '../../controller/authentication.dart';
@@ -10,6 +11,7 @@ import 'package:intl/intl.dart';
 import '../../model/currency.dart';
 import '../../controller/currency.dart';
 import 'package:get_storage/get_storage.dart';
+import '../../services/notification_services.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,10 +28,23 @@ class HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> transactions = [];
   final CurrencyController currencyController = Get.find<CurrencyController>();
   final box = GetStorage();
+  List<String> notifiedCategories = [];
+  final NotificationController Ncontroller = Get.find<NotificationController>();
+
   @override
   void initState() {
     super.initState();
     fetchTransactions();
+
+    // Load notified categories from persistent storage
+    final storedNotifiedCategories =
+        box.read('notifiedCategories') as List<dynamic>?;
+
+    // If any, assign them to the notifiedCategories list
+    if (storedNotifiedCategories != null) {
+      notifiedCategories = List<String>.from(storedNotifiedCategories);
+    }
+
     final storedCurrencyCode = GetStorage().read('selectedCurrency');
     if (storedCurrencyCode != null) {
       currencyController.selectedCurrency.value = Currency.currencies
@@ -38,6 +53,23 @@ class HomeScreenState extends State<HomeScreen> {
     currencyController.selectedCurrency.listen((currency) {
       fetchTransactions();
     });
+  }
+
+  void checkSpendingLimits(double limit, double progress, String category) {
+    // Check if the category has already been notified
+    if (limit > 0 &&
+        progress >= 1.0 &&
+        !notifiedCategories.contains(category)) {
+      String message = 'You have exceeded the spending limit for $category!';
+      LocalNotificationService.showBasicNotification(
+          message); // Trigger notification
+      Get.find<NotificationController>().addNotification(message, category);
+      // Add the category to the notified list
+      notifiedCategories.add(category);
+
+      // Save the updated notified categories list in persistent storage
+      box.write('notifiedCategories', notifiedCategories);
+    }
   }
 
   String formatCurrency(double amount, Currency currency) {
@@ -189,6 +221,7 @@ class HomeScreenState extends State<HomeScreen> {
                               if (success) {
                                 // Refresh the transactions after a successful update
                                 await fetchTransactions();
+
                                 // Optionally show a success message
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
@@ -210,7 +243,13 @@ class HomeScreenState extends State<HomeScreen> {
 
                           Navigator.of(context).pop();
                         },
-                        child: Text('Set'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color.fromARGB(255, 68, 255, 199),
+                        ),
+                        child: Text(
+                          'Set',
+                          style: TextStyle(color: Colors.black),
+                        ),
                       ),
                     ],
                   ),
@@ -300,6 +339,10 @@ class HomeScreenState extends State<HomeScreen> {
             'limit': limit,
           };
         }
+
+        // Call checkSpendingLimits for each category transaction
+        final progress = limit > 0 ? amount / limit : 0.0;
+        checkSpendingLimits(limit, progress, category);
       }
     }
 
@@ -532,48 +575,47 @@ class HomeScreenState extends State<HomeScreen> {
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 15.0),
                             child: Container(
-                                margin: const EdgeInsets.only(bottom: 15.0),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  color: isDark ? Colors.black : Colors.white,
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Color.fromARGB(255, 215, 120, 231),
-                                      spreadRadius: 1,
-                                      blurRadius: 4,
-                                      offset: Offset(3, 3),
+                              margin: const EdgeInsets.only(bottom: 15.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: isDark ? Colors.black : Colors.white,
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Color.fromARGB(255, 215, 120, 231),
+                                    spreadRadius: 1,
+                                    blurRadius: 4,
+                                    offset: Offset(3, 3),
+                                  ),
+                                ],
+                              ),
+                              child: ListTile(
+                                title: Text(category),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 5),
+                                    LinearProgressIndicator(
+                                      value: limit > 0
+                                          ? progress.clamp(0.0, 1.0)
+                                          : null,
+                                      backgroundColor: Colors.grey[300],
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        limit > 0
+                                            ? (progress >= 1.0
+                                                ? Colors.red
+                                                : Colors.green)
+                                            : Colors.white,
+                                      ),
+                                    ),
+                                    Text(
+                                      limit > 0
+                                          ? 'Amount Spent: $currencySymbol${amount.toStringAsFixed(2)} / Limit: $currencySymbol${limit.toStringAsFixed(2)}'
+                                          : 'Set Limit',
                                     ),
                                   ],
                                 ),
-                                child: ListTile(
-                                  title: Text(category),
-                                  subtitle: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 5),
-                                      LinearProgressIndicator(
-                                        value: limit > 0
-                                            ? progress.clamp(0.0, 1.0)
-                                            : null,
-                                        backgroundColor: Colors.grey[300],
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                          limit > 0
-                                              ? (progress >= 1.0
-                                                  ? Colors.red
-                                                  : Colors.green)
-                                              : Colors.white,
-                                        ),
-                                      ),
-                                      Text(
-                                        limit > 0
-                                            ? 'Amount Spent: $currencySymbol${amount.toStringAsFixed(2)} / Limit: $currencySymbol${limit.toStringAsFixed(2)}'
-                                            : 'Set Limit',
-                                      ),
-                                    ],
-                                  ),
-                                )),
+                              ),
+                            ),
                           ),
                         );
                       },

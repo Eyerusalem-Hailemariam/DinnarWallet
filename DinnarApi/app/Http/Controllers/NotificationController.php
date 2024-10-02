@@ -86,4 +86,26 @@ class NotificationController extends Controller
             return response()->json(['message' => 'Failed to update reminder'], 500);
         }
     }
+
+    public function store(Request $request) {
+        $request->validate([
+            'message' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
+            'timestamp' => 'required|date',
+        ]);
+
+        $notification = Notification::create([
+            'message' => $request->message,
+            'category' => $request->category,
+            'timestamp' => $reuest->timestamp,
+        ]
+        );
+
+        return response()->json($notifiction, 201);
+    }
+
+    public function index() {
+        $notifications = Notification::all();
+        return response()->json($notifications);
+    }
 }

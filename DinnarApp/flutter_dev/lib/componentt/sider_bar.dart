@@ -57,8 +57,8 @@ class Sidebar extends StatelessWidget {
                               },
                               icon: FaIcon(
                                 isDarkMode
-                                    ? CupertinoIcons.moon
-                                    : FontAwesomeIcons.cloudSun,
+                                    ? FontAwesomeIcons.cloudSun
+                                    : CupertinoIcons.moon,
                                 color: isDarkMode ? Colors.white : Colors.black,
                               ),
                               iconSize: 18,
