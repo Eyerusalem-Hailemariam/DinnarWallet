@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Notification; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReminderNotification;
+use Illuminate\Support\Facades\Log;
 
 class NotificationController extends Controller
 {
@@ -87,25 +88,43 @@ class NotificationController extends Controller
         }
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $request->validate([
             'message' => 'required|string|max:255',
             'category' => 'required|string|max:255',
             'timestamp' => 'required|date',
         ]);
 
+        // Store notification in data column
         $notification = Notification::create([
-            'message' => $request->message,
-            'category' => $request->category,
-            'timestamp' => $reuest->timestamp,
-        ]
-        );
+          
+                'message'   => $request->message,
+                'category'  => $request->category,
+                'timestamp' => $request->timestamp,
+            
+        ]);
 
-        return response()->json($notifiction, 201);
+        return response()->json($notification, 201);
+    }
+    public function index()
+    {
+        $notifications = Notification::all();
+        
+        // Log the notifications fetched to see the output in the logs
+        Log::info('Fetched notifications:', ['notifications' => $notifications]);
+    
+        return response()->json($notifications);
     }
 
-    public function index() {
-        $notifications = Notification::all();
-        return response()->json($notifications);
+    public function destory($id) {
+        $notification = Notification::find($id);
+
+        if(!$notification) {
+            return response()->json(['message' => 'Notification not found'], 404);
+        }
+        $notification->delete();
+
+        return response()->json(['message' => 'Notification deleted successfully'], 200);
     }
 }

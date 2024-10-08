@@ -12,10 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('notifications', function (Blueprint $table) {
-            $table->id();
-            $table->string('message');
-            $table->string('category');
-            $table->timestamps();
+            $table->id(); // Primary key
+            $table->string('message'); // Message field, max 255 characters
+            $table->string('category'); // Category field, max 255 characters
+            $table->timestamp('timestamp'); // Timestamp field
+            $table->timestamps(); // Created and updated at
         });
     }
 
