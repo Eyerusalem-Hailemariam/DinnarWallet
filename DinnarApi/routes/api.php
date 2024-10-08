@@ -3,7 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticationController;
-use App\Http\Controllers\Expense\ExpenseController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TransactionController;
@@ -90,14 +89,6 @@ Route::middleware('auth:api')->group(function () {
 
 
 
-// Protected routes (requires authentication)
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/expenses', [ExpenseController::class, 'index']);
-    Route::post('/expense/store', [ExpenseController::class, 'store']);
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
-});
 
 
 
