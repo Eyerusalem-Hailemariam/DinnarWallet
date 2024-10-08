@@ -17,12 +17,12 @@ class ReminderController extends GetxController {
     super.onInit();
   }
 
-// Flutter: ReminderController.dart
+
   Future<void> scheduleNotification(Reminder reminder) async {
     final DateTime now = DateTime.now();
     final Duration difference = reminder.dateTime.difference(now);
 
-    // If the reminder time is in the past, skip scheduling
+    
     if (difference.isNegative) {
       errorMessage.value =
           'Reminder time is in the past. Please select a future time.';
@@ -33,11 +33,11 @@ class ReminderController extends GetxController {
     Timer(difference, () async {
       await _sendNotification(reminder);
 
-      // Check the repeat option and schedule the next notification
+      
       if (reminder.repeatOption == 'Daily') {
         // Schedule for the next day
         DateTime nextReminderTime = reminder.dateTime.add(Duration(days: 1));
-        reminder.dateTime = nextReminderTime; // Update reminder with new time
+        reminder.dateTime = nextReminderTime; 
         print(
             'Setting next reminder for "${reminder.title}" to ${nextReminderTime.toIso8601String()} (Daily)');
         await scheduleNotification(reminder); // Re-schedule the notification
@@ -57,10 +57,10 @@ class ReminderController extends GetxController {
           reminder.dateTime.hour,
           reminder.dateTime.minute,
         );
-        reminder.dateTime = nextReminderTime; // Update reminder with new time
+        reminder.dateTime = nextReminderTime; 
         print(
             'Setting next reminder for "${reminder.title}" to ${nextReminderTime.toIso8601String()} (Monthly)');
-        await scheduleNotification(reminder); // Re-schedule the notification
+        await scheduleNotification(reminder); 
       }
     });
 
@@ -74,7 +74,7 @@ class ReminderController extends GetxController {
       Uri.parse(url + 'send-notification'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', // Include the token
+        'Authorization': 'Bearer $token', 
       },
       body: jsonEncode({
         'title': reminder.title,
@@ -147,13 +147,13 @@ class ReminderController extends GetxController {
   }
 
   Future<void> fetchReminders() async {
-    final token = box.read('token'); // Read the token from storage
+    final token = box.read('token'); 
     try {
       final response = await http.get(
         Uri.parse(url + 'reminders'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token', // Include the token here
+          'Authorization': 'Bearer $token', 
         },
       );
 

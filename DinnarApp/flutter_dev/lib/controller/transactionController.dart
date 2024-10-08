@@ -47,8 +47,7 @@ class TransactionController extends GetxController {
               double.tryParse(transactionMap['amount'].toString()) ?? 0.0;
           final type = transactionMap['type'];
 
-          // Convert the amount based on the selected currency's exchange rate
-
+        
           if (type == 'Income') {
             totalIncome += amount;
           } else if (type == 'Expense') {
@@ -60,7 +59,7 @@ class TransactionController extends GetxController {
             'category_name': category['name'],
             'category_icon': category['icon'],
             'category_color': category['color'],
-            // Store the converted amount
+        
           };
         }).toList();
 
@@ -111,18 +110,18 @@ class TransactionController extends GetxController {
       return;
     }
 
-    // Remove the transaction locally first
+  
     transactions
         .removeWhere((transaction) => transaction['id'] == transactionId);
 
     // Calculate totals immediately
     _calculateTotals();
 
-    // Refresh the transactions list to ensure reactivity
+    
     transactions.refresh();
     
 
-    // Optionally, fetch transactions again to sync with the server
+   
     fetchTransactions();
 
     print(
@@ -184,18 +183,18 @@ class TransactionController extends GetxController {
     if (index != -1) {
       transactions[index] = {...transactions[index], ...updatedData};
       print('Updated transaction with ID: $id');
-      transactions.refresh(); // Ensure UI is refreshed
+      transactions.refresh(); 
     } else {
       print('Transaction with ID: $id not found.');
     }
   }
 
-  // Flag a transaction as deleted locally
+ 
   void removeTransactionLocally(String transactionId) {
     deletedTransactions.add(transactionId);
   }
 
-  // Check if a transaction is marked as deleted
+ 
   bool isTransactionDeleted(String transactionId) {
     return deletedTransactions.contains(transactionId);
   }

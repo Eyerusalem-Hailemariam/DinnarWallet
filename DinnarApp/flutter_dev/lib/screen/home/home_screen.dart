@@ -61,13 +61,11 @@ class HomeScreenState extends State<HomeScreen> {
         progress >= 1.0 &&
         !notifiedCategories.contains(category)) {
       String message = 'You have exceeded the spending limit for $category!';
-      LocalNotificationService.showBasicNotification(
-          message); // Trigger notification
-      Get.find<NotificationController>().addNotification(message, category);
-      // Add the category to the notified list
+      LocalNotificationService.showBasicNotification(message);
+      Get.find<NotificationController>().addNotifications(message, category);
+
       notifiedCategories.add(category);
 
-      // Save the updated notified categories list in persistent storage
       box.write('notifiedCategories', notifiedCategories);
     }
   }

@@ -7,9 +7,7 @@ import '../../model/currency.dart';
 class ZoomedTransactionPage extends StatefulWidget {
   final List<dynamic> transactions;
 
-  const ZoomedTransactionPage({
-    required this.transactions
-    });
+  const ZoomedTransactionPage({required this.transactions});
 
   @override
   State<ZoomedTransactionPage> createState() => _ZoomedTransactionPageState();
@@ -34,6 +32,8 @@ class _ZoomedTransactionPageState extends State<ZoomedTransactionPage> {
       currencyController.selectedCurrency.value = Currency.currencies
           .firstWhere((currency) => currency.code == storedCurrencyCode);
     }
+    _filterTransactions();
+
     _searchController.addListener(() {
       _filterTransactions();
     });
@@ -50,12 +50,10 @@ class _ZoomedTransactionPageState extends State<ZoomedTransactionPage> {
     final query = _searchController.text.toLowerCase();
     setState(() {
       _filteredTransactions = _allTransactions.where((transaction) {
-        // Check if the transaction type matches the selected tab
         final isTypeMatch = _selectedTab == 0
             ? transaction['type'] == 'Income'
             : transaction['type'] == 'Expense';
 
-        // Check if the search query matches either category name or transaction date
         final isSearchMatch = query.isEmpty ||
             (transaction['category_name'] ?? '')
                 .toLowerCase()
@@ -225,7 +223,7 @@ class _ZoomedTransactionPageState extends State<ZoomedTransactionPage> {
                       child: Image.asset(
                         'assets/images/$categoryIcon.png',
                         width: 30,
-                        height: 30, 
+                        height: 30,
                       ),
                     ),
                     title: Text(categoryName),

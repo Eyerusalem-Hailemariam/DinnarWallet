@@ -104,8 +104,7 @@ void showAddTransactionDialog(
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Income and Expense Tabs
-                        // ... (Other UI elements)
+                       
                         Container(
                           decoration: BoxDecoration(
                             color: isDarkMode
@@ -429,7 +428,7 @@ void showAddTransactionDialog(
                               return;
                             }
 
-                            // Ensure a category is selected
+                            
                             if (selectedCategory == null ||
                                 selectedCategory!.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(

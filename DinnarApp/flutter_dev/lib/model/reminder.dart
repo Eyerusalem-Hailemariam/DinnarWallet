@@ -3,7 +3,7 @@ class Reminder {
   String title;
   String descripition;
   DateTime dateTime;
-  String category; // 'Income' or 'Expense'
+  String category; 
   String repeatOption;
 
   Reminder({

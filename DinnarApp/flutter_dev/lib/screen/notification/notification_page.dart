@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controller/notification.dart';
-import 'package:cupertino_icons/cupertino_icons.dart';
 
 class NotificationPage extends StatelessWidget {
   @override
@@ -36,7 +35,10 @@ class NotificationPage extends StatelessWidget {
                   'Time: ${notification['timestamp'] ?? ''}',
                 ),
                 trailing: IconButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      await notificationController
+                          .deleteNotification(notification['id']);
+                    },
                     icon: Icon(
                       Icons.cancel,
                       color: Colors.red,

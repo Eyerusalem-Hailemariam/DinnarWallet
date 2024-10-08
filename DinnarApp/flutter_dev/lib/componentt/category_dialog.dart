@@ -259,25 +259,18 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                           );
                           return;
                         }
-
-                        // Store the Color object directly in the map
                         final categoryData = {
                           'name': _categoryController.text,
                           'icon': iconSelected,
                           'color': categoryColor,
-                          // Keep the color as a Color object
                         };
-
-                        // Convert the Color to a string representation for database storage
                         String colorString =
                             categoryColor.value.toRadixString(16);
 
-                        // Call the addCategory method from the controller
                         int? categoryId = await _authController.addCategory(
                           categoryName: categoryData['name'] as String,
                           categoryIcon: categoryData['icon'] as String,
-                          categoryColor:
-                              colorString, // Pass the color as a string
+                          categoryColor: colorString,
                         );
                         print(categoryColor);
 

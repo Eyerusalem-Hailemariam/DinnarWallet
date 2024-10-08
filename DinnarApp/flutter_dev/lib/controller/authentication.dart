@@ -147,7 +147,7 @@ class AuthenticationController extends GetxController {
         Uri.parse(url + 'forgot-password'),
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json' // Ensure this header is set
+          'Content-Type': 'application/json' 
         },
         body: jsonEncode({'email': email}),
       );
@@ -171,7 +171,7 @@ class AuthenticationController extends GetxController {
 
   Future<bool> resetPassword({
     required String email,
-    required String resetCode, // Ensure this matches the backend
+    required String resetCode, 
     required String password,
     required String passwordConfirmation,
   }) async {
@@ -182,7 +182,7 @@ class AuthenticationController extends GetxController {
       var body = jsonEncode({
         'email': email,
         'reset_code':
-            resetCode, // Make sure this matches the backend field name
+            resetCode, 
         'password': password,
         'password_confirmation': passwordConfirmation,
       });
@@ -237,7 +237,7 @@ class AuthenticationController extends GetxController {
           'name': categoryName,
           'icon': categoryIcon,
           'color': categoryColor,
-          'user_id': userId, // Include user_id here
+          'user_id': userId,
         }),
       );
 
@@ -264,7 +264,7 @@ class AuthenticationController extends GetxController {
     required String transactionType,
   }) async {
     try {
-      final userId = box.read('user_id'); // Ensure user_id is not null
+      final userId = box.read('user_id'); 
       if (userId == null) {
         throw Exception('User ID is null');
       }
@@ -281,7 +281,7 @@ class AuthenticationController extends GetxController {
           'transaction_date': selectedDate,
           'amount': transactionAmount,
           'type': transactionType,
-          'user_id': userId, // Include user_id here
+          'user_id': userId, 
         }),
       );
 

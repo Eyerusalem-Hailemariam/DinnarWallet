@@ -4,21 +4,13 @@ import 'dart:convert';
 import '../constant/constant.dart';
 
 class NotificationController extends GetxController {
-  RxList<Map<String, String>> notifications = <Map<String, String>>[].obs;
+  // List to store notifications
+  RxList<Map<String, dynamic>> notifications = <Map<String, dynamic>>[].obs;
 
-  // Function to add a notificatio
-
-  void addNotification(String message, String category) {
-    notifications.add({
-      'message': message,
-      'category': category,
-      'timestamp': DateTime.now().toString(),
-    });
-  }
-
+  // Method to add a notification
   Future<void> addNotifications(String message, String category) async {
     final response = await http.post(
-      Uri.parse(url + 'notifications'),
+      Uri.parse(url + 'notifications'), 
       headers: {
         'Content-Type': 'application/json',
       },
@@ -28,20 +20,56 @@ class NotificationController extends GetxController {
         'timestamp': DateTime.now().toIso8601String(),
       }),
     );
-    if (response.statusCode == 200) {
+
+    if (response.statusCode == 201) {
       print('Notification added successfully');
+      fetchNotifications(); // Fetch updated notifications after adding
     } else {
       print('Failed to add notification: ${response.body}');
     }
   }
 
-  Future<List<dynamic>> fetchNotifications() async {
+  Future<void> fetchNotifications() async {
+    print('Fetching notifications...');
+
     final response = await http.get(Uri.parse(url + 'notifications'));
 
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      // Decode the response as a list of dynamic objects
+      List<dynamic> notificationsList = jsonDecode(response.body);
+
+      // Map the notifications and handle null values
+      notifications.value = notificationsList.map((notification) {
+        return {
+          'message': notification['message'] ?? 'No message',
+          'category': notification['category'] ?? 'Uncategorized',
+          'timestamp': notification['timestamp'] ?? 'Unknown date',
+        };
+      }).toList();
+
+      print('Notifications fetched successfully: $notifications');
     } else {
+      print('Failed to load notifications: ${response.body}');
       throw Exception('Failed to load notifications');
+    }
+  }
+
+  Future<void> deleteNotification(int id) async {
+    final response = await http.delete(
+      Uri.parse(url + 'notifications/$id'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print('Notification deleted successfully');
+      notifications.removeWhere((notification) => notification['id'] == id);
+    } else {
+      print('Failed to delete notification : ${response.body}');
     }
   }
 }

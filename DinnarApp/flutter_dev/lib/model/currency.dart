@@ -1,11 +1,11 @@
 
 
 class Currency {
-  final String name; // Name of the currency (e.g., 'United States Dollar')
-  final String code; // Currency code (e.g., 'USD')
-  final String symbol; // Currency symbol (e.g., '$')
+  final String name;
+  final String code; 
+  final String symbol; 
   final double
-      exchangeRate; // Exchange rate relative to a base currency (e.g., USD)
+      exchangeRate; 
 
   Currency({
     required this.name,
@@ -14,7 +14,7 @@ class Currency {
     required this.exchangeRate,
   });
 
-  // List of supported currencies with exchange rates
+  
   static List<Currency> currencies = [
     Currency(
         name: 'United States Dollar',
@@ -28,11 +28,11 @@ class Currency {
         name: 'Japanese Yen',
         code: 'JPY',
         symbol: '¥',
-        exchangeRate: 140.9331), // Example exchange rate
-    // Add more currencies as needed
+        exchangeRate: 140.9331), 
+    
   ];
 
-  // Get the selected currency based on the current code
+  
   static Currency getByCode(String code) {
     return currencies.firstWhere((currency) => currency.code == code,
         orElse: () => currencies.first);
