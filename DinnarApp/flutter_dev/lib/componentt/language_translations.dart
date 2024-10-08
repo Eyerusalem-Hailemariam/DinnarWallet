@@ -137,7 +137,7 @@ class LanguageTranslations extends Translations {
           "Add Category": "ምድብ ያክሉ",
           'Light': "ብርሃን",
           'Dark': "ጨለማ",
-          "logout": "ውጣ",
+          "logout": "ይውጡ",
           "Total Balance": "ጠቅላላ ተመን",
           "Income": "ገቢ",
           "Expense": "ወጪ",
