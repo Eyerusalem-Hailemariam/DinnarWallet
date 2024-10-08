@@ -151,7 +151,7 @@ class _StatisticsState extends State<Statistics> {
   }
 
   String get _totalLabelText {
-    return _selectedTab == 0 ? 'Total Income' : 'Total Expense';
+    return _selectedTab == 0 ? 'Total Income'.tr : 'Total Expense'.tr;
   }
 
   @override
@@ -179,8 +179,8 @@ class _StatisticsState extends State<Statistics> {
                 ),
                 child: Row(
                   children: [
-                    _buildTabButton("Income", 0, isDark),
-                    _buildTabButton("Expense", 1, isDark),
+                    _buildTabButton("Income".tr, 0, isDark),
+                    _buildTabButton("Expense".tr, 1, isDark),
                   ],
                 ),
               ),
@@ -202,7 +202,7 @@ class _StatisticsState extends State<Statistics> {
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: null,
-                        items: ['Monthly', 'Weekly', 'Yearly']
+                        items: ['Monthly'.tr, 'Weekly'.tr, 'Yearly'.tr]
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
